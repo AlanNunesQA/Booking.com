@@ -34,7 +34,7 @@ public class SearchHotel {
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		driver.get("http://www.booking.com/index.en-gb.html");
 	}
-
+	//comentando testes
 	@Given("^I am on the results screen$")
 	public void i_am_on_the_results_screen() throws Throwable {
 		openBooking();
