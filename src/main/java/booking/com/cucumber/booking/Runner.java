@@ -15,6 +15,6 @@ plugin = { "pretty", "html:target/cucumber", "json:target/cucumber.json" },
 features = "src/test/java/booking/com/cucumber/booking/Booking.feature", 
 glue = {"booking.com.cucumber.booking" })
 
-public class runner {
+public class Runner {
 
 }
