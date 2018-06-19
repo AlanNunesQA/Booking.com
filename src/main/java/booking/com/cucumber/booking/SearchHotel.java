@@ -21,19 +21,10 @@ public class SearchHotel {
 	private WebDriverWait wait;
 	boolean condition = true;
 	private String nameCity = "Limerick";
-	// Mudar nome das variaveis constantes tudo maiusculo
 	private static final String OPENSITE = "http://www.booking.com/index.en-gb.html";
-	private static final String classDate = "xp__dates-inner";
-	private static final String nameCityy = "ss";
-	private static final String classNextMonth = "c2-button c2-button-further";
-	private static final String idSelectDate = "1537228800000";
-	private static final String classButtonSubmit = "sb-searchbox__button  ";
-	private static final String classLabelFilters = "filter_label";
-	private static final String classNameHotelFilters = "sr-hotel__name";
 
 	public SearchHotel() {
-		// Baixar o chrome driver "explicar no readme" como fazer para rodar
-		// Explicar no readme qual classe executar para iniciar o projeto
+		// Chrome Driver for running tests
 		System.setProperty("webdriver.chrome.driver", "C:\\Users\\Alans\\Documents\\workspace\\chromedriver.exe");
 		driver = new ChromeDriver();
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
@@ -41,49 +32,60 @@ public class SearchHotel {
 	}
 
 	@Given("^I am on the results screen$")
-	// mudar nome dos metodos para boas praticas
+	// Consultation method with pre-informed data
 	public void openViewResults() throws Throwable {
 		wait = new WebDriverWait(driver, 3);
 		try {
-			driver.findElement(By.xpath(Fields.VIEW_CITY_NAME.getXPathFromField())).sendKeys(nameCity);
+			// City name input
+			driver.findElement(By.xpath(Fields.VIEW_CITY_NAME.getXPathFromCityName())).sendKeys(nameCity);
+			// Click on the field check in
 			wait.until(ExpectedConditions
-					.visibilityOfElementLocated(By.xpath("//*[contains(@class, '" + classDate + "')]"))).click();
+					.visibilityOfElementLocated(By.xpath(Fields.VIEW_CLASS_DATE.getXPathFromClassDate()))).click();
+			// Simulation of user with double click for next month
 			wait.until(ExpectedConditions
-					.visibilityOfElementLocated(By.xpath("//*[contains(@class, '" + classNextMonth + "')]"))).click();
-			driver.findElement(By.xpath("//*[contains(@class, '" + classNextMonth + "')]")).click();
+					.visibilityOfElementLocated(By.xpath(Fields.VIEW_CLASS_NEXT_MONTH.getXPathFromNextMonth())))
+					.click();
+			driver.findElement(By.xpath(Fields.VIEW_CLASS_NEXT_MONTH.getXPathFromNextMonth())).click();
+			// Date selection
 			wait.until(ExpectedConditions
-					.visibilityOfElementLocated(By.xpath("//*[contains(@data-id, '" + idSelectDate + "')]"))).click();
-			driver.findElement(By.xpath("//*[contains(@class, '" + classButtonSubmit + "')]")).click();
-		} catch (NoSuchElementException|TimeoutException e) { 
+					.visibilityOfElementLocated(By.xpath(Fields.VIEW_ID_SELECT_DATE.getXPathFromSelectDate()))).click();
+			// Submit form
+			driver.findElement(By.xpath(Fields.VIEW_CLASS_BUTTON_SUBMIT.getXPathFromSubmit())).click();
+		} catch (NoSuchElementException | TimeoutException e) {
 			throw new TestException("Could not perform search, elements not found", e, driver);
-		} 
+		}
 	}
 
 	@When("^I select \"([^\"]*)\"$")
-	// mudar nome dos metodos para boas praticas
 	public void selectFilter(String filter) throws Throwable {
 		wait = new WebDriverWait(driver, 3);
 		try {
+			// I put this thread sleep because it was intermittence on the site, it can be
+			// removed if there is no intermittence.
 			Thread.sleep(1000);
-			wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
-					"//*[contains(@class, '" + classLabelFilters + "') and contains(text(), '" + filter + "')]")))
-					.click();
+			// Selection of the filter according to the value passed by parameter in the
+			// scenario
+			wait.until(ExpectedConditions.visibilityOfElementLocated(
+					By.xpath(Fields.VIEW_CLASS_LABEL_FILTERS.getXPathFromLabelFilter(filter)))).click();
+			// Wait for filter application
 			wait.until(ExpectedConditions
-					.visibilityOfElementLocated(By.xpath("//*[contains(text(), 'Filters have been applied')]")))
+					.visibilityOfElementLocated(By.xpath(Fields.VIEW_APPLIED_FILTER.getXPathFromAppliedFilter())))
 					.isEnabled();
-		} catch (NoSuchElementException|TimeoutException e) {
+		} catch (NoSuchElementException | TimeoutException e) {
 			throw new TestException("Could not select filter, elements not found", e, driver);
 		}
 	}
 
 	@Then("^the name of the hotel \"([^\"]*)\" will appear$")
-	// mudar nome dos metodos para boas praticas
-	public void checkHotelName(String hotelName) throws Throwable {
+	public void checkHotelName(String hotelname) throws Throwable {
 		wait = new WebDriverWait(driver, 1);
 		try {
-			wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(@class, '"
-					+ classNameHotelFilters + "') and contains(text(), '" + hotelName + "')]")));
+			// Find the name of the hotel passed by parameter in the scenario
+			wait.until(ExpectedConditions.visibilityOfElementLocated(
+					By.xpath(Fields.VIEW_CLASS_NAME_HOTEL_FILTERS.getXPathFromHotelName(hotelname))));
 		} catch (TimeoutException e) {
+			// If the hotel is not found it will be passed the value false to variable, this
+			// bollean being used to compare with the value listed in the scenario
 			condition = false;
 		} catch (NoSuchElementException e) {
 			throw new TestException("We could not find the Hotel", e, driver);
@@ -91,8 +93,9 @@ public class SearchHotel {
 	}
 
 	@When("^I will have the result \"([^\"]*)\" on the screen$")
-	// mudar nome dos metodos para boas praticas
 	public void compareResult(Boolean result) throws Throwable {
+		// Condition to verify if the expected result in the scenario matches the
+		// received in the test
 		if (result == condition) {
 			System.out.println("=======================Scenery Success==========================");
 			driver.close();
