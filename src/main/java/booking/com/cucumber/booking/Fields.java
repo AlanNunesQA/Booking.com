@@ -19,36 +19,24 @@ public enum Fields {
 		this.name = name;
 	}
 
+	public String getXPathByClass() {
+		return "//*[contains(@class, '" + name + "')]";
+	}
+	
+	public String getXPathByClassAndFilter(String filter) {
+		return "//*[contains(@class, '" + name + "') and contains(text(), '" + filter + "')]";
+	}
+	
 	public String getXPathFromCityName() {
 		return "//*[contains(@name, '" + name + "')]";
 	}
 
-	public String getXPathFromClassDate() {
-		return "//*[contains(@class, '" + name + "')]";
-	}
-
-	public String getXPathFromNextMonth() {
-		return "//*[contains(@class, '" + name + "')]";
-	}
-
-	public String getXPathFromSelectDate() {
+	public String getXPathByData() {
 		return "//*[contains(@data-id, '" + name + "')]";
 	}
 
-	public String getXPathFromSubmit() {
-		return "//*[contains(@class, '" + name + "')]";
-	}
-
-	public String getXPathFromLabelFilter(String filter) {
-		return "//*[contains(@class, '" + name + "') and contains(text(), '" + filter + "')]";
-	}
-
-	public String getXPathFromAppliedFilter() {
+	public String getXPathByText() {
 		return "//*[contains(text(), '" + name + "')]";
-	}
-
-	public String getXPathFromHotelName(String hotelname) {
-		return "//*[contains(@class, '" + name + "') and contains(text(), '" + hotelname + "')]";
 	}
 
 }
